@@ -160,6 +160,8 @@ def main():
     put("cnykrw", "위안/원", "원", ecb + ", USD 환율로 교차 계산", from_rates(lambda r: r["KRW"] / r["CNY"]))
     put("usdinr", "달러/루피", "INR", ecb, from_rates(lambda r: r["INR"]))
     put("inrkrw", "루피/원", "원", ecb + ", USD 환율로 교차 계산", from_rates(lambda r: r["KRW"] / r["INR"]))
+    put("eurusd", "유로/달러", "$", ecb, from_rates(lambda r: 1 / r["EUR"]))
+    put("eurkrw", "유로/원", "원", ecb + ", USD 환율로 교차 계산", from_rates(lambda r: r["KRW"] / r["EUR"]))
     put("dxy", "달러인덱스(산식 산출)", "pt", "ECB 기준환율에 DXY 공식 산식 적용(ICE 공식 지수 아님, 소폭 차이 가능)",
         from_rates(lambda r: 50.14348112 * r["EUR"] ** 0.576 * r["JPY"] ** 0.136 * r["GBP"] ** 0.119
                    * r["CAD"] ** 0.091 * r["SEK"] ** 0.042 * r["CHF"] ** 0.036))
