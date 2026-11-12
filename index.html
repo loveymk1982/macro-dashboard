@@ -34,7 +34,7 @@ const CH=[
 {t:"미국 국채금리 (%)",pp:1,s:[{k:"us_sp",n:"10-2년 금리차(좌)",a:"y",c:BAR,bar:1},{k:"usbase",n:"기준금리(상단)",a:"y1",c:O,step:1},{k:"us2y",n:"2년물",a:"y1",c:B},{k:"us10y",n:"10년물",a:"y1",c:L}]},
 {t:"한국 국채금리 (%)",pp:1,s:[{k:"kr_sp",n:"10-2년 금리차(좌)",a:"y",c:BAR,bar:1},{k:"krbase",n:"기준금리",a:"y1",c:O,step:1},{k:"kr2y",n:"2년물",a:"y1",c:B},{k:"kr10y",n:"10년물",a:"y1",c:L}]},
 {t:"미−한 10년 금리차 · 달러/원",pp:1,tbl:1,s:[{k:"usdkrw",n:"달러/원(좌)",a:"y",c:B},{k:"gap",n:"미10-한10 금리차(우, %p)",a:"y1",c:G}],p:["usdkrw","y"]},
-{t:"WTI 현물 ($/bbl)",s:[{k:"wti",n:"WTI 현물",a:"y",c:B}],links:1}
+{t:"유가·운임 확인 링크",s:[],links:1,only:1}
 ];
 const P={},M={};let D=null;
 const dn=s=>Date.parse(s+"T00:00:00Z")/864e5;
@@ -45,9 +45,8 @@ const last=k=>(P[k]||[])[(P[k]||[]).length-1];
 function back(k,days){const a=P[k];if(!a||!a.length)return null;const t=dn(a[a.length-1][0])-days;let b=a[0];for(const p of a){if(dn(p[0])<=t)b=p}return b}
 function sub(a,b,name){const mb=new Map(P[b]||[]);P[name]=(P[a]||[]).filter(p=>mb.has(p[0])).map(p=>[p[0],+(p[1]-mb.get(p[0])).toFixed(4)])}
 function chg(k,pp){const l=last(k),b=back(k,30);if(!l||!b)return null;return pp?l[1]-b[1]:(l[1]/b[1]-1)*100}
-function insights(){const o=[],u=chg("usdkrw"),w=chg("wti"),g=last("gap");
+function insights(){const o=[],u=chg("usdkrw"),g=last("gap");
  if(u!=null){if(u>1)o.push(`원/달러 한달 ${f(u,1)}% 상승: 달러 결제 원자재·수입부품 원가 부담은 커지고, 수출 매출의 원화 환산에는 유리합니다.`);else if(u<-1)o.push(`원/달러 한달 ${f(-u,1)}% 하락: 수출 원화 환산 매출에는 불리하고, 수입 원가 부담은 줄어듭니다.`);else o.push("원/달러는 한달 전과 비슷한 수준(±1% 이내)으로 환율 영향 변화는 제한적입니다.")}
- if(w!=null&&Math.abs(w)>=5)o.push(`WTI 현물 한달 ${w>0?"+":""}${f(w,1)}%: 수지·고무 등 소재 및 물류비 ${w>0?"부담":"완화"} 요인입니다.`);
  if(g)o.push(`미−한 10년 금리차 ${f(g[1],2)}%p(${ds(g[0])}): 금리차가 크면 원화 약세 압력으로 작용할 수 있습니다.`);
  return o.slice(0,3)}
 function build(){
@@ -66,6 +65,7 @@ function build(){
   const ok=c.s.filter(s=>(P[s.k]||[]).length);
   const el=document.createElement("div");el.className="card";
   const lkh=c.links?`<a class="lk" href="https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.html" target="_blank" rel="noopener noreferrer"><b>WTI 선물 확인 링크 ›</b><span>CME Group · 선물 시세는 원본 사이트에서 확인</span></a><a class="lk" href="https://en.sse.sh.cn/indices/scfinew.jsp" target="_blank" rel="noopener noreferrer"><b>SCFI 확인 링크 ›</b><span>상하이해운거래소(SSE) · 컨테이너 운임지수</span></a>`:"";
+  if(c.only){el.innerHTML=`<h2>${c.t}</h2><div class="mu">라이선스 문제로 그래프 대신 원본 사이트로 연결합니다. 누르면 새 창에서 열립니다.</div>`+lkh;app.appendChild(el);return}
   if(!ok.length){el.innerHTML=`<h2>${c.t}</h2><div class="mu">데이터를 아직 받지 못했습니다. 아래 링크에서 확인하세요.</div>`+lkh;app.appendChild(el);return}
   let kp="";
   ok.filter(s=>!s.bar).forEach(s=>{const l=last(s.k),b=back(s.k,30),d=c.pp&&s.k!=="usdkrw"?l[1]-b[1]:(l[1]/b[1]-1)*100,pp=c.pp&&s.k!=="usdkrw";
