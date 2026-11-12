@@ -114,8 +114,12 @@ def main():
             prev = json.load(open(OUT, encoding="utf-8")).get("series", {})
         except Exception:
             prev = {}
-    cfg = json.load(open("config.json", encoding="utf-8"))
     series, errors = {}, []
+    try:
+        cfg = json.load(open("config.json", encoding="utf-8"))
+    except Exception as e:  # config.json 문법 오류가 있어도 수집은 계속
+        cfg = {}
+        errors.append("config.json 형식 오류(따옴표·쉼표 확인): " + type(e).__name__)
 
     def put(key, name, unit, source, fn):
         print(f"[{key}] 수집 시작", flush=True)
@@ -178,7 +182,7 @@ def main():
                 series[k] = dict(prev[k], stale=True)
 
     out = {"generated_at": NOW.isoformat(timespec="minutes"), "plan": cfg.get("plan", {}),
-           "notes": cfg.get("notes", []), "errors": errors, "series": series}
+           "notes": cfg.get("notes", []), "implications": cfg.get("implications", []), "errors": errors, "series": series}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     print(f"수집 완료: 시리즈 {len(series)}개, 오류 {len(errors)}건")
