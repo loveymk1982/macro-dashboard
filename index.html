@@ -33,8 +33,8 @@ const CH=[
 {t:"달러/위안 · 위안/원",s:[{k:"usdcny",n:"달러/위안(좌)",a:"y",c:B},{k:"cnykrw",n:"위안/원(우)",a:"y1",c:L}],p:["cnykrw","y1"]},
 {t:"달러/루피 · 루피/원",s:[{k:"usdinr",n:"달러/루피(좌)",a:"y",c:B},{k:"inrkrw",n:"루피/원(우)",a:"y1",c:L}],p:["inrkrw","y1"]},
 {t:"유로/달러 · 유로/원",s:[{k:"eurusd",n:"유로/달러(좌)",a:"y",c:B},{k:"eurkrw",n:"유로/원(우)",a:"y1",c:L}],p:["eurkrw","y1"]},
-{t:"미국 국채금리 (%)",pp:1,s:[{k:"us_sp",n:"10-2년 금리차(좌)",a:"y",c:BAR,bar:1},{k:"usbase",n:"기준금리(상단)",a:"y1",c:"#0f766e",step:1},{k:"us2y",n:"2년물",a:"y1",c:B},{k:"us10y",n:"10년물",a:"y1",c:L}]},
-{t:"한국 국채금리 (%)",pp:1,s:[{k:"kr_sp",n:"10-2년 금리차(좌)",a:"y",c:BAR,bar:1},{k:"krbase",n:"기준금리",a:"y1",c:"#0f766e",step:1},{k:"kr2y",n:"2년물",a:"y1",c:B},{k:"kr10y",n:"10년물",a:"y1",c:L}]},
+{t:"미국 국채금리 (%)",pp:1,s:[{k:"us_sp",n:"10-2년 금리차(좌)",a:"y",c:BAR,bar:1},{k:"usbase",n:"기준금리(상단)",a:"y1",c:"#374151",step:1},{k:"us2y",n:"2년물",a:"y1",c:B},{k:"us10y",n:"10년물",a:"y1",c:L}]},
+{t:"한국 국채금리 (%)",pp:1,s:[{k:"kr_sp",n:"10-2년 금리차(좌)",a:"y",c:BAR,bar:1},{k:"krbase",n:"기준금리",a:"y1",c:"#374151",step:1},{k:"kr2y",n:"2년물",a:"y1",c:B},{k:"kr10y",n:"10년물",a:"y1",c:L}]},
 {t:"미−한 10년 금리차 · 달러/원",pp:1,tbl:1,s:[{k:"usdkrw",n:"달러/원(좌)",a:"y",c:B},{k:"gap",n:"미10-한10 금리차(우, %p)",a:"y1",c:G}],p:["usdkrw","y"]},
 {t:"유가·운임 확인 링크",s:[],links:1,only:1}
 ];
@@ -51,17 +51,18 @@ function insights(){const o=[],u=chg("usdkrw"),g=last("gap");
  if(u!=null){if(u>1)o.push(`원/달러 한달 ${f(u,1)}% 상승: 달러 결제 원자재·수입부품 원가 부담은 커지고, 수출 매출의 원화 환산에는 유리합니다.`);else if(u<-1)o.push(`원/달러 한달 ${f(-u,1)}% 하락: 수출 원화 환산 매출에는 불리하고, 수입 원가 부담은 줄어듭니다.`);else o.push("원/달러는 한달 전과 비슷한 수준(±1% 이내)으로 환율 영향 변화는 제한적입니다.")}
  if(g)o.push(`미−한 10년 금리차 ${f(g[1],2)}%p(${ds(g[0])}): 금리차가 크면 원화 약세 압력으로 작용할 수 있습니다.`);
  return o.slice(0,3)}
+const fr=v=>v.toLocaleString("ko-KR",{minimumFractionDigits:2,maximumFractionDigits:3});
 const md=s=>{const a=s.split("-");return (+a[1])+"/"+(+a[2])};
 function prevp(k){const a=P[k]||[];return a[a.length-2]||a[a.length-1]}
-function mmh(k){const a=P[k]||[];if(!a.length)return"";const t=dn(a[a.length-1][0])-30;let hi=null,lo=null;for(const p of a){if(dn(p[0])>=t){if(!hi||p[1]>hi[1])hi=p;if(!lo||p[1]<lo[1])lo=p}}
- return hi?`<br><span class="mu">최근 한달 최고 ${f(hi[1])}(${md(hi[0])}) · 최저 ${f(lo[1])}(${md(lo[0])})</span>`:""}
+function mmh(k,r){const a=P[k]||[];if(!a.length)return"";const t=dn(a[a.length-1][0])-30;let hi=null,lo=null;for(const p of a){if(dn(p[0])>=t){if(!hi||p[1]>hi[1])hi=p;if(!lo||p[1]<lo[1])lo=p}}
+ return hi?`<br><span class="mu">최근 한달 최고 ${(r?fr:f)(hi[1])}(${md(hi[0])}) · 최저 ${(r?fr:f)(lo[1])}(${md(lo[0])})</span>`:""}
 function build(){
  CHS.forEach(c=>c.destroy());CHS=[];for(const k in P)delete P[k];for(const k in M)delete M[k];
  const S=D.series;for(const k in S)P[k]=S[k].points,M[k]=S[k];
  sub("us10y","us2y","us_sp");sub("kr10y","kr2y","kr_sp");sub("us10y","kr10y","gap");
  M.us_sp=M.gap=M.kr_sp={name:"계산값",source:"국채 수익률로 계산(같은 날짜끼리 차이)",asof:null};
  const gen=D.generated_at.replace("T"," ").slice(0,16);
- document.getElementById("meta").textContent="마지막 수집: "+gen+" (KST) · 화면 확인: "+new Date().toLocaleString("ko-KR",{hour12:false,month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+" · 표시 기간: 최근 1년";
+ const nk=new Date(Date.now()+9*36e5).toISOString().slice(0,16).replace("T"," ");document.getElementById("meta").innerHTML="마지막 수집: "+gen+" (KST)<br>화면 확인: "+nk+" (KST) · 표시 기간: 최근 1년";
  const app=document.getElementById("app");app.innerHTML="";
  if(D.errors&&D.errors.length){const w=document.createElement("div");w.className="warn";w.textContent="⚠ 일부 데이터 수집에 문제가 있어 이전 값이 표시될 수 있습니다: "+D.errors.slice(0,3).join(" / ");app.appendChild(w)}
  const top=document.createElement("div");top.className="card";
@@ -76,11 +77,11 @@ function build(){
   if(!ok.length){el.innerHTML=`<h2>${c.t}</h2><div class="mu">데이터를 아직 받지 못했습니다. 아래 링크에서 확인하세요.</div>`+lkh;app.appendChild(el);return}
   let kp="";
   ok.filter(s=>!s.bar).forEach(s=>{const l=last(s.k),b=prevp(s.k),d=c.pp&&s.k!=="usdkrw"?l[1]-b[1]:(l[1]/b[1]-1)*100,pp=c.pp&&s.k!=="usdkrw";
-   kp+=`<div><span class="mu">${s.n}</span><br><b>${f(l[1])}</b> <span class="${d>0?"up":"dn"}">${d>0?"▲":"▼"}${f(Math.abs(d),2)}${pp?"%p":"%"}</span> <span class="mu">(${ds(l[0])}, 직전 ${ds(b[0])} 대비)</span>${s.step?"":mmh(s.k)}</div>`});
+   kp+=`<div><span class="mu">${s.n}</span><br><b>${(pp?fr:f)(l[1])}</b> ${Math.abs(d)<0.005?'<span class="mu">– 보합</span>':`<span class="${d>0?"up":"dn"}">${d>0?"▲":"▼"}${f(Math.abs(d),2)}${pp?"%p":"%"}</span>`} <span class="mu">(${ds(l[0])}, 직전 ${ds(b[0])} 대비)</span>${s.step?"":mmh(s.k,pp)}</div>`});
   if(c.p&&D.plan&&D.plan[c.p[0]]!=null)kp+=`<div><span class="mu">사업계획 ${f(D.plan[c.p[0]])}</span></div>`;
   let tb="";
-  if(c.tbl){const row=(n,a,b,d)=>{const x=last(a),y=last(b),z=last(d);return x&&y&&z?`<tr><td>${n}</td><td>${f(x[1])}<br><span class="mu">${ds(x[0])}</span></td><td>${f(y[1])}<br><span class="mu">${ds(y[0])}</span></td><td>${f(z[1])}<br><span class="mu">${ds(z[0])}</span></td></tr>`:""};
-   const g=(a,b)=>last(a)&&last(b)?f(last(a)[1]-last(b)[1],3):"-";
+  if(c.tbl){const row=(n,a,b,d)=>{const x=last(a),y=last(b),z=last(d);return x&&y&&z?`<tr><td>${n}</td><td>${fr(x[1])}<br><span class="mu">${ds(x[0])}</span></td><td>${fr(y[1])}<br><span class="mu">${ds(y[0])}</span></td><td>${fr(z[1])}<br><span class="mu">${ds(z[0])}</span></td></tr>`:""};
+   const g=(a,b)=>last(a)&&last(b)?fr(last(a)[1]-last(b)[1]):"-";
    tb=`<table><tr><th>구분(%)</th><th>기준금리</th><th>2년물</th><th>10년물</th></tr>${row("미국","usbase","us2y","us10y")}${row("한국","krbase","kr2y","kr10y")}<tr><td>미−한(%p)</td><td>${g("usbase","krbase")}</td><td>${g("us2y","kr2y")}</td><td>${g("us10y","kr10y")}</td></tr></table><div class="src">표의 차이는 각 항목의 최신 표시값끼리 뺀 값이며 날짜가 다를 수 있습니다. 위 그래프의 금리차는 같은 날짜끼리 계산한 값입니다.</div>`}
   const raw=ok.map(s=>M[s.k]&&M[s.k].source).filter(Boolean),cross=raw.some(x=>x.includes(", USD 환율로 교차 계산")),srcs=[...new Set(raw.map(x=>x.replace(", USD 환율로 교차 계산","")))].join(" · ")+(cross?" · 원화 환율은 USD 환율로 교차 계산":"");
   const asof=ok.map(s=>{const l=last(s.k);return l?ds(l[0]):null}).filter(Boolean);
@@ -88,16 +89,16 @@ function build(){
   el.innerHTML=`<h2>${c.t}</h2><div class="kpi">${kp}</div><div class="cv"><canvas></canvas></div>${tb}<div class="src">출처: ${srcs||"-"}<br>자료 기준일: ${[...new Set(asof)].join(", ")} · 마지막 수집: ${gen}${stale?" · ⚠ 갱신 지연(이전 값)":""}</div>`+lkh;
   app.appendChild(el);
   const anchor=Math.max(...ok.map(s=>dn(last(s.k)[0]))),mn=anchor-365,mx0=anchor,mx=mx0+(mx0-mn)/19;
-  const sets=ok.map(s=>({type:s.bar?"bar":"line",label:s.n,data:P[s.k].filter(p=>dn(p[0])>=mn).map(p=>({x:dn(p[0]),y:p[1]})),yAxisID:s.a,borderColor:s.c,backgroundColor:s.c,borderWidth:s.bar?0:(s.step?2.4:1.8),pointRadius:0,stepped:s.step?"before":false,borderDash:s.step?[5,3]:[],order:s.bar?2:1,barThickness:s.bar?2:undefined}));
-  if(c.p&&D.plan&&D.plan[c.p[0]]!=null)sets.push({type:"line",label:"사업계획 "+f(D.plan[c.p[0]]),data:[{x:mn,y:D.plan[c.p[0]]},{x:mx,y:D.plan[c.p[0]]}],yAxisID:c.p[1],borderColor:"#dc2626",borderDash:[6,4],borderWidth:1.4,pointRadius:0});
+  const sets=ok.map(s=>({type:s.bar?"bar":"line",label:s.n,data:P[s.k].filter(p=>dn(p[0])>=mn).map(p=>({x:dn(p[0]),y:p[1]})),yAxisID:s.a,borderColor:s.c,backgroundColor:s.c,borderWidth:s.bar?0:(s.step?1.2:1.8),pointStyle:s.bar?"rect":"line",pointRadius:0,stepped:s.step?"before":false,borderDash:s.step?[4,3]:[],order:s.bar?2:1,barThickness:s.bar?2:undefined}));
+  if(c.p&&D.plan&&D.plan[c.p[0]]!=null)sets.push({type:"line",label:"사업계획 "+f(D.plan[c.p[0]]),data:[{x:mn,y:D.plan[c.p[0]]},{x:mx,y:D.plan[c.p[0]]}],yAxisID:c.p[1],borderColor:"#dc2626",borderDash:[6,4],borderWidth:1.4,pointRadius:0,pointStyle:"line"});
   const css=getComputedStyle(document.documentElement),tx=css.getPropertyValue("--mu").trim(),gl=css.getPropertyValue("--ln").trim();
   CHS.push(new Chart(el.querySelector("canvas"),{data:{datasets:sets},options:{responsive:true,maintainAspectRatio:false,animation:false,layout:{padding:{top:4,right:2}},interaction:{mode:"nearest",intersect:false,axis:"x"},
-   plugins:{legend:{labels:{boxWidth:12,color:tx,font:{size:10}}},tooltip:{callbacks:{title:t=>{const d=new Date(t[0].parsed.x*864e5);return d.getUTCFullYear()+"."+(d.getUTCMonth()+1)+"."+d.getUTCDate()}}}},
+   plugins:{legend:{labels:{usePointStyle:true,boxWidth:22,boxHeight:6,color:tx,font:{size:10}}},tooltip:{callbacks:{title:t=>{const d=new Date(t[0].parsed.x*864e5);return d.getUTCFullYear()+"."+(d.getUTCMonth()+1)+"."+d.getUTCDate()}}}},
    scales:{x:{type:"linear",offset:false,min:mn,max:mx,ticks:{maxTicksLimit:6,includeBounds:false,color:tx,font:{size:9},padding:2,callback:v=>sd(v)},grid:{color:gl,offset:false}},y:{position:"left",grace:"12%",beginAtZero:ok.some(s=>s.bar),ticks:{color:tx,font:{size:9},padding:2},grid:{color:gl}},y1:{position:"right",grace:"12%",ticks:{color:tx,font:{size:9},padding:2},grid:{drawOnChartArea:false}}}}}));
  });
 }
 function load(){const b=document.getElementById("rf");b.disabled=true;b.textContent="불러오는 중…";
- return Promise.all([fetch("data.json?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("config.json?v="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([j,c])=>{if(c){if(Array.isArray(c.notes))j.notes=c.notes;if(Array.isArray(c.implications))j.implications=c.implications;if(c.plan)j.plan=c.plan}D=j;build();LAST=Date.now()}).catch(()=>{if(!D){document.getElementById("meta").textContent="";document.getElementById("app").innerHTML='<div class="card"><h2>데이터 준비 중</h2><div class="mu">데이터를 불러오지 못했습니다. 잠시 후 새로고침을 눌러 주세요.</div></div>'}else document.getElementById("meta").textContent+=" · ⚠ 새로고침 실패(이전 화면 유지)"}).then(()=>{b.disabled=false;b.textContent="↻ 새로고침"})}
+ return Promise.all([fetch("data.json?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("config.json?v="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([j,c])=>{if(c){if(Array.isArray(c.notes))j.notes=c.notes;if(Array.isArray(c.implications))j.implications=c.implications;if(c.plan)j.plan=c.plan}D=j;build();LAST=Date.now()}).catch(()=>{if(!D){document.getElementById("meta").textContent="";document.getElementById("app").innerHTML='<div class="card"><h2>데이터 준비 중</h2><div class="mu">데이터를 불러오지 못했습니다. 잠시 후 새로고침을 눌러 주세요.</div></div>'}else document.getElementById("meta").innerHTML+="<br>⚠ 새로고침 실패(이전 화면 유지)"}).then(()=>{b.disabled=false;b.textContent="↻ 새로고침"})}
 document.getElementById("rf").addEventListener("click",load);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-LAST>30*60*1000)load()});
 load();
