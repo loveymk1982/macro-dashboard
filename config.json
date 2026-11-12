@@ -1,8 +1,11 @@
 {
   "plan": {"usdkrw": 1350, "mxnkrw": 69, "cnykrw": 190, "inrkrw": 15.6},
   "notes": [
-    "달러 강세에도 원/달러 1,331원(11/12), 계획 1,350원 하회로 수출 환산 불리 <a href='https://www.news1.kr/finance/market-exr/6352275' target='_blank'>[뉴스1]</a>",
     "美 12월 인상 90%대·DXY 103(19개월 최고), 10년물 5% 안팎(11/12) <a href='https://www.cnbc.com/2026/11/12/us-treasurys-bonds-yields.html' target='_blank'>[CNBC]</a> <a href='https://www.monetamarkets.com/markets/dollar-hits-19-month-high-on-fed-hike-bets-as-yen-tests-intervention-risk-near-160-12th-november-2026/' target='_blank'>[Moneta]</a>",
-    "11/13 美 PPI, 11/18 APEC 미중회담, 11/26 한은 금통위가 변수 <a href='https://www.cnbc.com/2026/11/12/us-treasurys-bonds-yields.html' target='_blank'>[CNBC]</a> <a href='https://www.theepochtimes.com/china/top-us-chinese-diplomats-speak-ahead-of-expected-trump-xi-meeting-6123834' target='_blank'>[EpochTimes]</a> <a href='https://www.newspim.com/news/view/20261111001059' target='_blank'>[뉴스핌]</a>"
+    "한은 11/26 인상 전망 우세, 11/13 美 PPI·11/18 미중회담이 변수 <a href='https://www.newspim.com/news/view/20261111001059' target='_blank'>[뉴스핌]</a> <a href='https://www.theepochtimes.com/china/top-us-chinese-diplomats-speak-ahead-of-expected-trump-xi-meeting-6123834' target='_blank'>[EpochTimes]</a>"
+  ],
+  "implications": [
+    "원/달러 1,331원(11/12), 계획 1,350원 하회… 수출 환산 불리 <a href='https://www.news1.kr/finance/market-exr/6352275' target='_blank'>[뉴스1]</a>",
+    "위안·페소 계획 상회·루피 하회(11/11), WTI 86달러로 원가 부담 완화 <a href='https://www.angelone.in/news/commodities/crude-oil-prices-hovers-near-11-week-lows-as-us-iran-tensions-ease-november-11-2026' target='_blank'>[AngelOne]</a>"
   ]
 }
