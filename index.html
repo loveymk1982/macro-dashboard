@@ -92,7 +92,7 @@ function build(){
  });
 }
 function load(){const b=document.getElementById("rf");b.disabled=true;b.textContent="불러오는 중…";
- return fetch("data.json?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{D=j;build();LAST=Date.now()}).catch(()=>{if(!D){document.getElementById("meta").textContent="";document.getElementById("app").innerHTML='<div class="card"><h2>데이터 준비 중</h2><div class="mu">데이터를 불러오지 못했습니다. 잠시 후 새로고침을 눌러 주세요.</div></div>'}else document.getElementById("meta").textContent+=" · ⚠ 새로고침 실패(이전 화면 유지)"}).then(()=>{b.disabled=false;b.textContent="↻ 새로고침"})}
+ return Promise.all([fetch("data.json?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("config.json?v="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([j,c])=>{if(c){if(Array.isArray(c.notes))j.notes=c.notes;if(c.plan)j.plan=c.plan}D=j;build();LAST=Date.now()}).catch(()=>{if(!D){document.getElementById("meta").textContent="";document.getElementById("app").innerHTML='<div class="card"><h2>데이터 준비 중</h2><div class="mu">데이터를 불러오지 못했습니다. 잠시 후 새로고침을 눌러 주세요.</div></div>'}else document.getElementById("meta").textContent+=" · ⚠ 새로고침 실패(이전 화면 유지)"}).then(()=>{b.disabled=false;b.textContent="↻ 새로고침"})}
 document.getElementById("rf").addEventListener("click",load);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-LAST>30*60*1000)load()});
 load();
