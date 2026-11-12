@@ -11,15 +11,20 @@ OUT = "data.json"
 UA = {"User-Agent": "macro-dashboard/1.0"}
 
 
-def get(url, tries=3):
+def get(url, tries=2, timeout=20):
     err = None
+    host = url.split("/")[2]
     for i in range(tries):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40) as r:
-                return r.read().decode("utf-8")
+            t0 = time.time()
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
+                body = r.read().decode("utf-8")
+            print(f"  요청 성공 {host} ({time.time() - t0:.1f}초)", flush=True)
+            return body
         except Exception as e:  # URL(키 포함 가능)을 출력하지 않도록 유형만 기록
             err = e
-            time.sleep(2 * (i + 1))
+            print(f"  요청 실패 {host}: {type(e).__name__} {getattr(e, 'code', '')}", flush=True)
+            time.sleep(2)
     code = getattr(err, "code", "")
     raise RuntimeError(f"{type(err).__name__} {code}".strip())
 
@@ -37,8 +42,48 @@ def fx_rates():
 
 
 def fred(sid):
-    rows = list(csv.reader(io.StringIO(get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}&cosd={START}"))))
+    rows = list(csv.reader(io.StringIO(get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}&cosd={START}", tries=1, timeout=25))))
     return [[r[0], float(r[1])] for r in rows[1:] if len(r) > 1 and r[1] not in ("", ".")]
+
+
+_TR = {}
+
+
+def treasury(col):
+    """미 재무부 일별 국채수익률(공식, 키 불필요)."""
+    pts = []
+    for y in range(START.year, TODAY.year + 1):
+        if y not in _TR:
+            url = ("https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
+                   f"daily-treasury-rates.csv/{y}/all?type=daily_treasury_yield_curve&field_tdr_date_value={y}&page&_format=csv")
+            _TR[y] = list(csv.DictReader(io.StringIO(get(url, tries=2, timeout=25))))
+        for r in _TR[y]:
+            v = (r.get(col) or "").strip()
+            if v and v.upper() != "N/A":
+                m, d, yy = r["Date"].split("/")
+                pts.append([f"{yy}-{m}-{d}", float(v)])
+    return sorted(pts)
+
+
+def nyfed_target():
+    """뉴욕연은 EFFR 응답의 연방기금금리 목표 상단."""
+    j = json.loads(get(f"https://markets.newyorkfed.org/api/rates/unsecured/effr/search.json?startDate={START}&endDate={TODAY}", tries=2, timeout=25))
+    return sorted([r["effectiveDate"], float(r["targetRateTo"])] for r in j["refRates"] if r.get("targetRateTo") is not None)
+
+
+def first_ok(*pairs):
+    def run():
+        errs = []
+        for label, fn in pairs:
+            try:
+                p = fn()
+                if p:
+                    run.used = label
+                    return p
+            except Exception as e:
+                errs.append(f"{label}: {e}")
+        raise RuntimeError(" | ".join(errs))
+    return run
 
 
 def ecos_item(key, stat, must):
@@ -73,8 +118,10 @@ def main():
     series, errors = {}, []
 
     def put(key, name, unit, source, fn):
+        print(f"[{key}] 수집 시작", flush=True)
         try:
             pts = [p for p in fn() if p[0] >= str(START)]
+            source = getattr(fn, "used", source)
             if not pts:
                 raise RuntimeError("데이터 없음")
             series[key] = {"name": name, "unit": unit, "source": source, "asof": pts[-1][0], "points": pts}
@@ -83,6 +130,7 @@ def main():
             if key in prev:
                 series[key] = dict(prev[key], stale=True)
 
+    print("수집 시작", NOW.isoformat(timespec="minutes"), flush=True)
     R = {}
     try:
         R = fx_rates()
@@ -112,9 +160,11 @@ def main():
         from_rates(lambda r: 50.14348112 * r["EUR"] ** 0.576 * r["JPY"] ** 0.136 * r["GBP"] ** 0.119
                    * r["CAD"] ** 0.091 * r["SEK"] ** 0.042 * r["CHF"] ** 0.036))
 
-    put("us2y", "미국 국채 2년", "%", "FRED DGS2(미 재무부)", lambda: fred("DGS2"))
-    put("us10y", "미국 국채 10년", "%", "FRED DGS10(미 재무부)", lambda: fred("DGS10"))
-    put("usbase", "미국 기준금리(상단)", "%", "FRED DFEDTARU(연방기금금리 목표 상단)", lambda: fred("DFEDTARU"))
+    TRL = "미 재무부 일별 국채수익률(Daily Treasury Par Yield Curve)"
+    put("us2y", "미국 국채 2년", "%", TRL, first_ok((TRL, lambda: treasury("2 Yr")), ("FRED DGS2", lambda: fred("DGS2"))))
+    put("us10y", "미국 국채 10년", "%", TRL, first_ok((TRL, lambda: treasury("10 Yr")), ("FRED DGS10", lambda: fred("DGS10"))))
+    put("usbase", "미국 기준금리(상단)", "%", "연방기금금리 목표 상단",
+        first_ok(("뉴욕연은 EFFR 목표금리 상단", nyfed_target), ("FRED DFEDTARU(목표 상단)", lambda: fred("DFEDTARU"))))
     put("wti", "WTI 현물", "$/bbl", "EIA·FRED DCOILWTICO (현물가, 선물 종가 아님)", lambda: fred("DCOILWTICO"))
 
     key = os.environ.get("ECOS_API_KEY", "").strip()
