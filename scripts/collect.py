@@ -165,7 +165,6 @@ def main():
     put("us10y", "미국 국채 10년", "%", TRL, first_ok((TRL, lambda: treasury("10 Yr")), ("FRED DGS10", lambda: fred("DGS10"))))
     put("usbase", "미국 기준금리(상단)", "%", "연방기금금리 목표 상단",
         first_ok(("뉴욕연은 EFFR 목표금리 상단", nyfed_target), ("FRED DFEDTARU(목표 상단)", lambda: fred("DFEDTARU"))))
-    put("wti", "WTI 현물", "$/bbl", "EIA·FRED DCOILWTICO (현물가, 선물 종가 아님)", lambda: fred("DCOILWTICO"))
 
     key = os.environ.get("ECOS_API_KEY", "").strip()
     if key:
