@@ -3,20 +3,21 @@
 <title>주요 경제지표 동향</title>
 <meta property="og:title" content="주요 경제지표 동향(주간)"><meta property="og:description" content="환율·금리·유가 대시보드(오전8시갱신)">
 <style>
-:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mu:#64748b;--ln:#e2e8f0;--ac:#0b3d91;--wn:#fef3c7;--lb:#374151;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f172a;--card:#1e293b;--tx:#f1f5f9;--mu:#94a3b8;--ln:#334155;--ac:#93c5fd;--wn:#422006;--lb:#cbd5e1}}
+:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mu:#64748b;--ln:#e2e8f0;--ac:#0b3d91;--wn:#fef3c7;--lb:#374151;--ft:#94a3b8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f172a;--card:#1e293b;--tx:#f1f5f9;--mu:#94a3b8;--ln:#334155;--ac:#93c5fd;--wn:#422006;--lb:#cbd5e1;--ft:#64748b}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,"Noto Sans KR","Malgun Gothic",sans-serif}
 main{max-width:760px;margin:0 auto;padding:8px}
 h1{font-size:19px;margin:6px 0 2px;color:var(--ac)}.meta{font-size:12px;color:var(--mu);margin-bottom:10px}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:10px 8px;margin-bottom:10px}
-.card h2{font-size:15px;margin:0 0 6px}.card ul{margin:0;padding-left:18px}.card li{margin:3px 0;font-size:14px}
+.card h2{font-size:15px;margin:0 0 6px}.card ul{margin:0;padding-left:18px}.card li{margin:6px 0;font-size:14px;line-height:1.3}.card li:first-child{margin-top:3px}.card li:last-child{margin-bottom:3px}
 .lb{color:var(--lb);font-size:13px;font-weight:600}.kpi{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin-bottom:6px}.kpi b{font-size:17px}
 .up{color:#dc2626}.dn{color:#2563eb}.mu{color:var(--mu);font-size:12px}.warn{background:var(--wn);border-radius:10px;padding:8px 12px;font-size:12.5px;margin-bottom:10px}
 .cv{position:relative;height:230px}
 table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}th,td{border:1px solid var(--ln);padding:5px 6px;text-align:center}th{background:var(--bg)}
-.src{font-size:11.5px;color:var(--mu);margin-top:6px}
+.src{font-size:9.5px;line-height:1.3;color:var(--ft);margin-top:6px}
 .lk{display:block;text-decoration:none;color:var(--tx);border:2px solid var(--ac);border-radius:12px;padding:14px;margin-top:10px}.lk b{font-size:16px;color:var(--ac)}.lk span{display:block;font-size:12.5px;color:var(--mu);margin-top:2px}
 .hd{display:flex;justify-content:space-between;align-items:center;gap:8px}#rf{font:inherit;font-size:13px;background:var(--ac);color:var(--card);border:0;border-radius:18px;padding:7px 14px;white-space:nowrap;cursor:pointer}#rf:disabled{opacity:.6}
+@media(prefers-color-scheme:dark){.card li a{color:#7cb7ff}.dn{color:#60a5fa}.up{color:#f87171}}
 footer{font-size:11.5px;color:var(--mu);padding:4px 2px 20px}
 </style></head><body><main>
 <div class="hd"><h1>주요 경제지표 동향 (주간)</h1><button id="rf" type="button">↻ 새로고침</button></div>
