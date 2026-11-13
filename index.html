@@ -3,14 +3,14 @@
 <title>주요 경제지표 동향</title>
 <meta property="og:title" content="주요 경제지표 동향(주간)"><meta property="og:description" content="환율·금리·유가 대시보드(오전8시갱신)">
 <style>
-:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mu:#64748b;--ln:#e2e8f0;--ac:#0b3d91;--wn:#fef3c7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f172a;--card:#1e293b;--tx:#f1f5f9;--mu:#94a3b8;--ln:#334155;--ac:#93c5fd;--wn:#422006}}
+:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mu:#64748b;--ln:#e2e8f0;--ac:#0b3d91;--wn:#fef3c7;--lb:#374151;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f172a;--card:#1e293b;--tx:#f1f5f9;--mu:#94a3b8;--ln:#334155;--ac:#93c5fd;--wn:#422006;--lb:#cbd5e1}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,"Noto Sans KR","Malgun Gothic",sans-serif}
 main{max-width:760px;margin:0 auto;padding:8px}
 h1{font-size:19px;margin:6px 0 2px;color:var(--ac)}.meta{font-size:12px;color:var(--mu);margin-bottom:10px}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:10px 8px;margin-bottom:10px}
 .card h2{font-size:15px;margin:0 0 6px}.card ul{margin:0;padding-left:18px}.card li{margin:3px 0;font-size:14px}
-.kpi{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin-bottom:6px}.kpi b{font-size:17px}
+.lb{color:var(--lb);font-size:13px;font-weight:600}.kpi{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin-bottom:6px}.kpi b{font-size:17px}
 .up{color:#dc2626}.dn{color:#2563eb}.mu{color:var(--mu);font-size:12px}.warn{background:var(--wn);border-radius:10px;padding:8px 12px;font-size:12.5px;margin-bottom:10px}
 .cv{position:relative;height:230px}
 table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}th,td{border:1px solid var(--ln);padding:5px 6px;text-align:center}th{background:var(--bg)}
@@ -77,8 +77,8 @@ function build(){
   if(!ok.length){el.innerHTML=`<h2>${c.t}</h2><div class="mu">데이터를 아직 받지 못했습니다. 아래 링크에서 확인하세요.</div>`+lkh;app.appendChild(el);return}
   let kp="";
   ok.filter(s=>!s.bar).forEach(s=>{const l=last(s.k),b=prevp(s.k),d=c.pp&&s.k!=="usdkrw"?l[1]-b[1]:(l[1]/b[1]-1)*100,pp=c.pp&&s.k!=="usdkrw";
-   kp+=`<div><span class="mu">${s.n}</span><br><b>${(pp?fr:f)(l[1])}</b> ${Math.abs(d)<0.005?'<span class="mu">– 보합</span>':`<span class="${d>0?"up":"dn"}">${d>0?"▲":"▼"}${f(Math.abs(d),2)}${pp?"%p":"%"}</span>`} <span class="mu">(${ds(l[0])}, 직전 ${ds(b[0])} 대비)</span>${s.step?"":mmh(s.k,pp)}</div>`});
-  if(c.p&&D.plan&&D.plan[c.p[0]]!=null)kp+=`<div><span class="mu">사업계획 ${f(D.plan[c.p[0]])}</span></div>`;
+   kp+=`<div><span class="lb">${s.n}</span><br><b>${(pp?fr:f)(l[1])}</b> ${Math.abs(d)<0.005?'<span class="mu">– 보합</span>':`<span class="${d>0?"up":"dn"}">${d>0?"▲":"▼"}${f(Math.abs(d),2)}${pp?"%p":"%"}</span>`} <span class="mu">(${ds(l[0])}, 직전 ${ds(b[0])} 대비)</span>${s.step?"":mmh(s.k,pp)}</div>`});
+  if(c.p&&D.plan&&D.plan[c.p[0]]!=null)kp+=`<div><span class="lb">사업계획 ${f(D.plan[c.p[0]])}</span></div>`;
   let tb="";
   if(c.tbl){const row=(n,a,b,d)=>{const x=last(a),y=last(b),z=last(d);return x&&y&&z?`<tr><td>${n}</td><td>${fr(x[1])}<br><span class="mu">${ds(x[0])}</span></td><td>${fr(y[1])}<br><span class="mu">${ds(y[0])}</span></td><td>${fr(z[1])}<br><span class="mu">${ds(z[0])}</span></td></tr>`:""};
    const g=(a,b)=>last(a)&&last(b)?fr(last(a)[1]-last(b)[1]):"-";
