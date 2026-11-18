@@ -68,8 +68,8 @@ function build(){
  const app=document.getElementById("app");app.innerHTML="";
  if(D.errors&&D.errors.length){const w=document.createElement("div");w.className="warn";w.textContent="⚠ 일부 데이터 수집에 문제가 있어 이전 값이 표시될 수 있습니다: "+D.errors.slice(0,3).join(" / ");app.appendChild(w)}
  const top=document.createElement("div");top.className="card";
- const notes=(D.notes||[]).filter(Boolean),imp=(D.implications||[]).filter(Boolean),ins=imp.length?imp:insights();
- top.innerHTML="<h2>특이사항</h2>"+(notes.length?"<ul>"+notes.map(x=>`<li>${x}</li>`).join("")+"</ul>":'<div class="mu">이번 주 특이사항 미입력</div>')+"<h2 style='margin-top:10px'>자동차 부품산업 시사점"+(imp.length?"":" (자동 요약)")+"</h2><ul>"+ins.map(x=>`<li>${x}</li>`).join("")+"</ul>";
+ const notes=(D.notes||[]).filter(Boolean),imp=(D.implications||[]).filter(Boolean),ins=imp.length?imp:insights();const co=(D.company||[]).filter(Boolean);
+ top.innerHTML="<h2>특이사항</h2>"+(notes.length?"<ul>"+notes.map(x=>`<li>${x}</li>`).join("")+"</ul>":'<div class="mu">이번 주 특이사항 미입력</div>')+"<h2 style='margin-top:10px'>자동차 부품산업 시사점"+(imp.length?"":" (자동 요약)")+"</h2><ul>"+ins.map(x=>`<li>${x}</li>`).join("")+"</ul>"+(co.length?"<h2 style='margin-top:10px'>당사 시사점</h2><ul>"+co.map(x=>`<li>${String(x).replace(/<[^>]*>/g,"")}</li>`).join("")+"</ul>":"");
  app.appendChild(top);
  CH.forEach(c=>{
   const ok=c.s.filter(s=>(P[s.k]||[]).length);
@@ -100,7 +100,7 @@ function build(){
  });
 }
 function load(){const b=document.getElementById("rf");b.disabled=true;b.textContent="불러오는 중…";
- return Promise.all([fetch("data.json?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("config.json?v="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([j,c])=>{if(c){if(Array.isArray(c.notes))j.notes=c.notes;if(Array.isArray(c.implications))j.implications=c.implications;if(c.plan)j.plan=c.plan}D=j;build();LAST=Date.now()}).catch(()=>{if(!D){document.getElementById("meta").textContent="";document.getElementById("app").innerHTML='<div class="card"><h2>데이터 준비 중</h2><div class="mu">데이터를 불러오지 못했습니다. 잠시 후 새로고침을 눌러 주세요.</div></div>'}else document.getElementById("meta").innerHTML+="<br>⚠ 새로고침 실패(이전 화면 유지)"}).then(()=>{b.disabled=false;b.textContent="↻ 새로고침"})}
+ return Promise.all([fetch("data.json?v="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("config.json?v="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([j,c])=>{if(c){if(Array.isArray(c.notes))j.notes=c.notes;if(Array.isArray(c.implications))j.implications=c.implications;if(Array.isArray(c.company))j.company=c.company;if(c.plan)j.plan=c.plan}D=j;build();LAST=Date.now()}).catch(()=>{if(!D){document.getElementById("meta").textContent="";document.getElementById("app").innerHTML='<div class="card"><h2>데이터 준비 중</h2><div class="mu">데이터를 불러오지 못했습니다. 잠시 후 새로고침을 눌러 주세요.</div></div>'}else document.getElementById("meta").innerHTML+="<br>⚠ 새로고침 실패(이전 화면 유지)"}).then(()=>{b.disabled=false;b.textContent="↻ 새로고침"})}
 document.getElementById("rf").addEventListener("click",load);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-LAST>30*60*1000)load()});
 load();
