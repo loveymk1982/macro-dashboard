@@ -80,7 +80,7 @@ function build(){
   let kp="";
   ok.filter(s=>!s.bar).forEach(s=>{const l=last(s.k),b=prevp(s.k),d=c.pp&&s.k!=="usdkrw"?l[1]-b[1]:(l[1]/b[1]-1)*100,pp=c.pp&&s.k!=="usdkrw";
    kp+=`<div><span class="lb">${s.n}</span><br><b>${(pp?fr:f)(l[1])}</b> ${Math.abs(d)<0.005?'<span class="mu">– 보합</span>':`<span class="${d>0?"up":"dn"}">${d>0?"▲":"▼"}${f(Math.abs(d),2)}${pp?"%p":"%"}</span>`} <span class="mu">(${ds(l[0])}, 직전 ${ds(b[0])} 대비)</span>${s.step?"":mmh(s.k,pp)}</div>`});
-  if(c.p&&D.plan&&D.plan[c.p[0]]!=null)kp+=`<div><span class="lb">사업계획 ${f(D.plan[c.p[0]])}</span></div>`;
+  if(c.p&&D.plan&&D.plan[c.p[0]]!=null)kp+=`<div><span class="lb">27년사업계획 ${f(D.plan[c.p[0]])}</span></div>`;
   let tb="";
   if(c.tbl){const row=(n,a,b,d)=>{const x=last(a),y=last(b),z=last(d);return x&&y&&z?`<tr><td>${n}</td><td>${fr(x[1])}<br><span class="mu">${ds(x[0])}</span></td><td>${fr(y[1])}<br><span class="mu">${ds(y[0])}</span></td><td>${fr(z[1])}<br><span class="mu">${ds(z[0])}</span></td></tr>`:""};
    const g=(a,b)=>last(a)&&last(b)?fr(last(a)[1]-last(b)[1]):"-";
@@ -92,7 +92,7 @@ function build(){
   app.appendChild(el);
   const anchor=Math.max(...ok.map(s=>dn(last(s.k)[0]))),mn=anchor-365,mx0=anchor,mx=mx0+(mx0-mn)/19;
   const sets=ok.map(s=>({type:s.bar?"bar":"line",label:s.n,data:P[s.k].filter(p=>dn(p[0])>=mn).map(p=>({x:dn(p[0]),y:p[1]})),yAxisID:s.a,borderColor:s.c,backgroundColor:s.c,borderWidth:s.bar?0:(s.step?1.2:1.8),pointStyle:s.bar?"rect":"circle",pointHoverRadius:3,k:s.k,pointRadius:0,stepped:s.step?"before":false,borderDash:s.step?[4,3]:[],order:s.bar?2:1,barThickness:s.bar?2:undefined}));
-  if(c.p&&D.plan&&D.plan[c.p[0]]!=null)sets.push({type:"line",label:"사업계획 "+f(D.plan[c.p[0]]),data:[{x:mn,y:D.plan[c.p[0]]},{x:mx,y:D.plan[c.p[0]]}],yAxisID:c.p[1],borderColor:"#dc2626",borderDash:[6,4],borderWidth:1.4,pointRadius:0,pointHoverRadius:0,pointStyle:"circle",plan:1});
+  if(c.p&&D.plan&&D.plan[c.p[0]]!=null)sets.push({type:"line",label:"27년사업계획 "+f(D.plan[c.p[0]]),data:[{x:mn,y:D.plan[c.p[0]]},{x:mx,y:D.plan[c.p[0]]}],yAxisID:c.p[1],borderColor:"#dc2626",borderDash:[6,4],borderWidth:1.4,pointRadius:0,pointHoverRadius:0,pointStyle:"circle",plan:1});
   const css=getComputedStyle(document.documentElement),tx=css.getPropertyValue("--mu").trim(),gl=css.getPropertyValue("--ln").trim();
   CHS.push(new Chart(el.querySelector("canvas"),{data:{datasets:sets},options:{responsive:true,maintainAspectRatio:false,animation:false,layout:{padding:{top:4,right:2}},interaction:{mode:"nearest",intersect:false,axis:"x"},
    plugins:{legend:{labels:{generateLabels:ch=>Chart.defaults.plugins.legend.labels.generateLabels(ch).map(l=>({...l,pointStyle:l.pointStyle==="circle"?"line":l.pointStyle})),usePointStyle:true,boxWidth:22,boxHeight:6,color:tx,font:{size:10}}},tooltip:{callbacks:{title:t=>{const d=new Date(t[0].parsed.x*864e5);return d.getUTCFullYear()+"."+pad(d.getUTCMonth()+1)+"."+pad(d.getUTCDate())},label:i=>i.dataset.label+": "+((c.pp&&i.dataset.k!=="usdkrw")?fr(i.parsed.y):f(i.parsed.y))},filter:i=>!i.dataset.plan}},
