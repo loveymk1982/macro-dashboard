@@ -175,11 +175,13 @@ def main():
     key = os.environ.get("ECOS_API_KEY", "").strip()
     if key:
         put("kr2y", "한국 국채 2년", "%", "한국은행 ECOS 817Y002", lambda: ecos(key, "817Y002", "국고채(2년)"))
+        put("kr3y", "한국 국채 3년", "%", "한국은행 ECOS 817Y002", lambda: ecos(key, "817Y002", "국고채(3년)"))
+        put("kr5y", "한국 국채 5년", "%", "한국은행 ECOS 817Y002", lambda: ecos(key, "817Y002", "국고채(5년)"))
         put("kr10y", "한국 국채 10년", "%", "한국은행 ECOS 817Y002", lambda: ecos(key, "817Y002", "국고채(10년)"))
         put("krbase", "한국 기준금리", "%", "한국은행 ECOS 722Y001", lambda: ecos(key, "722Y001", "기준금리"))
     else:
         errors.append("ECOS_API_KEY 가 설정되지 않았습니다(저장소 Secrets 확인).")
-        for k in ("kr2y", "kr10y", "krbase"):
+        for k in ("kr2y", "kr3y", "kr5y", "kr10y", "krbase"):
             if k in prev:
                 series[k] = dict(prev[k], stale=True)
 
